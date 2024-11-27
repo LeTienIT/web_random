@@ -1,0 +1,78 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* img {
+  max-width: 100%;
+} */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #000;
+    overflow: hidden;
+    transition: background-color 0.1s ease-in-out; /* Đổi nền mượt */
+    position: relative;
+}
+.overlay {
+    position: absolute;
+    top: 50%; /* Đặt ở trung tâm */
+    left: 50%; /* Đặt ở trung tâm */
+    width: 0px; /* Ban đầu không có kích thước */
+    height: 0px;
+    background: rgba(255, 255, 255, 0.8); /* Màu trắng mờ */
+    border-radius: 50%; /* Biến thành hình tròn */
+    transform: translate(-50%, -50%) scale(1); /* Giữ ở trung tâm, kích thước ban đầu */
+    opacity: 0; /* Ban đầu mờ hoàn toàn */
+    z-index: 100; /* Hiển thị lớp phủ trên cùng */
+    transition: all 0.1s ease; /* Để mượt khi cập nhật qua JavaScript */
+  }
+.box {
+    position: relative;
+    width: 20vmin; /* Kích thước tỉ lệ theo viewport */
+    height: 20vmin;
+    transform-style: preserve-3d;
+    animation: ani 20s linear infinite;
+    z-index: 1;
+}
+@keyframes ani {
+    0% {
+        transform: perspective(1000px) rotateY(0deg);
+    }
+    100% {
+        transform: perspective(1000px) rotateY(360deg);
+    }
+}
+.box span {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform-origin: center;
+    transform-style: preserve-3d;
+    transform: rotateY(calc(var(--i) * 45deg)) translateZ(var(--distance, 400px)); /* Sử dụng biến --distance */
+    -webkit-box-reflect: below 0px linear-gradient(transparent, transparent, #0004);
+}
+
+.box span img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(1.2); /* Làm sáng ảnh */
+    transition: filter 0.3s ease-in-out; /* Hiệu ứng thay đổi sáng mượt */
+}
+
+@keyframes ani-fast {
+    0% {
+        transform: perspective(1000px) rotateY(0deg);
+    }
+    100% {
+        transform: perspective(1000px) rotateY(360deg);
+    }
+}
