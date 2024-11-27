@@ -7,6 +7,38 @@ let animationFrame; // Biến lưu requestAnimationFrame
 const body = document.body; // Chọn phần tử body để đổi nền
 const overlay = document.querySelector('.overlay');
 const result = document.getElementById("result");
+const codeRD = document.getElementById("codeRD");
+const nameRD = document.getElementById("nameRD");
+
+let randomData = [];  // Khai báo mảng để lưu dữ liệu
+
+function loadData() {
+    fetch('save-data.php', {
+        method: 'GET',
+    })
+    .then(response => response.text())  // Lấy dữ liệu dưới dạng văn bản
+    .then(text => {
+        try {
+            // Thử chuyển đổi nội dung trả về thành JSON
+            const data = JSON.parse(text);
+            if (data.message) {
+                alert(data.message);  // Hiển thị thông báo nếu có lỗi
+            } else {
+                randomData = data; // Lưu dữ liệu vào mảng randomData
+            }
+        } catch (error) {
+            console.error('Dữ liệu trả về không phải là JSON hợp lệ:', error);
+            alert('Lỗi: Dữ liệu trả về không phải là JSON hợp lệ.');
+        }
+    })
+    .catch(error => {
+        console.error('Lỗi:', error);
+        alert('Đã có lỗi xảy ra khi tải dữ liệu.');
+    });
+}
+window.onload = function() {
+    loadData();
+};
 document.addEventListener('click', () => {
     if (isAnimating == 1)
     {
@@ -16,11 +48,22 @@ document.addEventListener('click', () => {
     {
         resetAnimation();
     }
-    else{
+    else if(randomData.length > 0){
+        const randomIndex = Math.floor(Math.random() * randomData.length);
+        const randomItem = randomData[randomIndex];
+
+        codeRD.innerText = randomItem.code;
+        nameRD.innerText = randomItem.name
+        
+        console.log('Dữ liệu ngẫu nhiên:', randomItem);
+        randomData.splice(randomIndex, 1);
+
         isPaused = true;
 
         isPaused = true;
-        isAnimating = 1; // Đặt trạng thái animating
+        isAnimating = 1; 
+
+        body.style.background = 'linear-gradient(135deg, #b36a6e 0%, #a07d8a 30%, #946a9e 60%, #4b6b75 100%)';
 
         // Lấy trạng thái xoay hiện tại
         const computedStyle = getComputedStyle(box);
@@ -71,6 +114,9 @@ document.addEventListener('click', () => {
 
         animationFrame = requestAnimationFrame(accelerate);
     }
+    else{
+        alert("Dữ liệu chưa được thiết lập");
+    }
 });
 
 // Hàm hiệu ứng phóng to overlay
@@ -89,6 +135,7 @@ const startOverlayEffect = () => {
             setTimeout(updateOverlay, 90); // Gọi lại hàm với độ trễ
         }else {
             box.style.display = 'none';
+            body.style.background = 'linear-gradient(135deg, #ff9a9e 0%, #fad0c4 30%, #fbc2eb 60%, #8fd3f4 100%)';
             setTimeout(() => {
                 overlay.style.transition = 'transform 0.2s ease-out, opacity 0.2s ease-out';
                 overlay.style.opacity = '1'; 
@@ -118,7 +165,7 @@ const startOverlayEffect = () => {
                         card.classList.add('hover'); 
                     }
                     isAnimating = 2;
-                }, 1000);
+                }, 3000);
             }
         };
 
@@ -150,3 +197,4 @@ function resetAnimation(){
     }
     
 };
+
