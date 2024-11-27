@@ -7,6 +7,7 @@
   max-width: 100%;
 } */
 body {
+    cursor: none;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -17,18 +18,14 @@ body {
     position: relative;
 }
 .overlay {
+    display: none;
     position: absolute;
-    top: 50%; /* Đặt ở trung tâm */
-    left: 50%; /* Đặt ở trung tâm */
-    width: 0px; /* Ban đầu không có kích thước */
-    height: 0px;
-    background: rgba(255, 255, 255, 0.8); /* Màu trắng mờ */
-    border-radius: 50%; /* Biến thành hình tròn */
-    transform: translate(-50%, -50%) scale(1); /* Giữ ở trung tâm, kích thước ban đầu */
-    opacity: 0; /* Ban đầu mờ hoàn toàn */
-    z-index: 100; /* Hiển thị lớp phủ trên cùng */
-    transition: all 0.1s ease; /* Để mượt khi cập nhật qua JavaScript */
-  }
+    top: 0;left: 0;right: 0;bottom: 0;
+    background: rgba(255, 255, 255, 1); /* Màu trắng mờ */
+    opacity: 0; /* Ban đầu ẩn */
+    z-index: 100; /* Hiển thị trên cùng */
+    transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+}
 .box {
     position: relative;
     width: 20vmin; /* Kích thước tỉ lệ theo viewport */
@@ -76,3 +73,170 @@ body {
         transform: perspective(1000px) rotateY(360deg);
     }
 }
+
+#result{
+    display: none;
+    position: absolute;
+    top: 0;left: 0;right: 0;bottom: 0;
+    /* display: flex; */
+    justify-content: center;
+    align-items: center;
+}
+#result .card {
+    position: relative;
+    height: 300px;
+    width: 230px;
+}
+#result .card:nth-child(2) {
+    filter: hue-rotate(300deg) brightness(1.3);
+}
+#result .card:nth-child(3) {
+        filter: hue-rotate(200deg) brightness(1.5);
+}
+#result .card:nth-child(4) {
+    filter: hue-rotate(60deg) brightness(3);
+}
+#result .card .boxshadow {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    border: 1px solid rgb(9, 255, 0);
+    transform: scale(0.8);
+    box-shadow: rgb(9, 255, 0) 0px 30px 70px 0px;
+    transition: all 0.5s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+#result .card .main {
+    width: 230px;
+  height: 300px;
+  overflow: hidden;
+  background: rgb(0, 255, 149);
+  background: linear-gradient(
+    0deg,
+    #8f02ac 0%,
+    rgb(0, 255, 106) 60%,
+    #8f02ac 100%
+  );
+  position: relative;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 40px,
+    100% calc(100% - 40px),
+    calc(100% - 40px) 100%,
+    40px 100%,
+    0 calc(100% - 40px)
+  );
+  box-shadow: rgb(0, 132, 255) 0px 7px 29px 0px;
+  transition: all 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+#result .card .main .top {
+    position: absolute;
+    top: 0px;
+    left: 0;
+    width: 0px;
+    height: 0px;
+    z-index: 2;
+    border-top: 115px solid black;
+    border-left: 115px solid transparent;
+    border-right: 115px solid transparent;
+    transition: all 0.5s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+#result .card .main .side {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    transform: translateX(-50%);
+    height: 101%;
+    background: black;
+    clip-path: polygon(0% 0%, 50% 0, 95% 45%, 100% 100%, 0% 100%);
+    transition: all 0.5s cubic-bezier(0.785, 0.135, 0.15, 0.86) 1s;
+}
+#result .card .main .left {
+    left: 0;
+}
+#result .card .main .right {
+    right: 0;
+    transform: translateX(50%) scale(-1, 1);
+}
+#result .card .main .title {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 90px;
+    font-weight: bold;
+    font-size: 25px;
+    opacity: 0;
+    z-index: -1;
+    transition: all 0.2s ease-out 0s;
+}
+#result .card .main .button-container {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+#result .card .main .button-container .button {
+    position: absolute;
+    transform: translateX(-50%);
+    padding: 5px 10px;
+    clip-path: polygon(0 0, 100% 0, 81% 100%, 21% 100%);
+    background: black;
+    border: none;
+    color: white;
+    display: grid;
+    place-content: center;
+    transition: all 0.5s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+#result .card .main .button-container .button .svg {
+    width: 15px;
+    transition: all 0.2s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+#result .card .main .button-container .button:nth-child(1) {
+    bottom: 300px;
+    transition-delay: 0.4s;
+}
+#result .card .main .button-container .button:nth-child(2) {
+    bottom: 300px;
+    transition-delay: 0.6s;
+}
+#result .card .main .button-container .button:nth-child(3) {
+    bottom: 300px;
+    transition-delay: 0.8s;
+}
+#result .card .main .button-container .button:hover .svg {
+    transform: scale(1.2);
+}
+#result .card .main .button-container .button:active .svg {
+    transform: scale(0.7);
+}
+#result .card.hover .main {
+    transform: scale(1.1);
+}
+#result .card.hover .main .top {
+    top: -50px;
+}
+#result .card.hover .main .left {
+    left: -50px;
+    transition: all 0.5s cubic-bezier(0.785, 0.135, 0.15, 0.86) 0.1s;
+}
+#result .card.hover .main .right {
+    right: -50px;
+    transition: all 0.5s cubic-bezier(0.785, 0.135, 0.15, 0.86) 0.1s;
+}
+#result .card.hover .main .title {
+    opacity: 1;
+    transition: all 0.2s ease-out 1.3s;
+}
+#result .card.hover .main .button-container .button:nth-child(1) {
+    bottom: 80px;
+    transition-delay: 0.8s;
+}
+#result .card.hover .main .button-container .button:nth-child(2) {
+    bottom: 40px;
+    transition-delay: 0.6s;
+}
+#result .card.hover .main .button-container .button:nth-child(3) {
+    bottom: 0;
+    transition-delay: 0.4s;
+}
+  

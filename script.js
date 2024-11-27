@@ -1,18 +1,26 @@
+
+let isPaused = false; // Kiểm soát dừng/tiếp tục
+let isAnimating = 0; 
+
 const box = document.querySelector('.box'); // Chọn khối xoay
-let isPaused = false; // Trạng thái dừng
 let animationFrame; // Biến lưu requestAnimationFrame
 const body = document.body; // Chọn phần tử body để đổi nền
 const overlay = document.querySelector('.overlay');
-
+const result = document.getElementById("result");
 document.addEventListener('click', () => {
-    if (!isPaused) {
+    if (isAnimating == 1)
+    {
+        result;
+    } 
+    else if(isAnimating == 2)
+    {
+        resetAnimation();
+    }
+    else{
         isPaused = true;
 
-        overlay.style.display = 'block';
-        setTimeout(() => {
-            overlay.style.opacity = 1; // Tăng độ đậm
-            overlay.style.transform = 'translate(-50%, -50%) scale(30)'; // Phóng to đến full màn hình
-        }, 1000);
+        isPaused = true;
+        isAnimating = 1; // Đặt trạng thái animating
 
         // Lấy trạng thái xoay hiện tại
         const computedStyle = getComputedStyle(box);
@@ -24,26 +32,19 @@ document.addEventListener('click', () => {
 
         let duration = 20; // Thời gian chu kỳ ban đầu (20s)
         let distance = 400; // Khoảng cách ban đầu giữa các ảnh (translateZ)
-        let opct = 0; // Độ mờ ban đầu của overlay
-        let scal = 1; // Kích thước ban đầu của overlay
+
         const targetDuration = 0.2; // Thời gian chu kỳ mục tiêu (0.2s)
         const targetDistance = 0; // Khoảng cách mục tiêu (tập trung hoàn toàn ở giữa)
-        const targetScale = 50; // Kích thước tối đa của overlay
-        const targetOpacity = 1; // Độ mờ tối đa của overlay
+
         const startTime = performance.now(); // Lấy thời gian bắt đầu
 
         const accelerate = (currentTime) => {
-
 
             const elapsedTime = (currentTime - startTime) / 1000; // Thời gian đã trôi qua (giây)
 
             // Nội suy (linear interpolation) giữa thời gian và khoảng cách
             duration = Math.max(targetDuration, 20 - (elapsedTime * 10)); // Giảm dần về 0.2s
             distance = Math.max(targetDistance, 400 - (elapsedTime * 400)); // Giảm dần về 0
-            opct = Math.min(1, opct + 0.02); // Tăng opacity dần dần từ 0 đến 1
-            scal = Math.min(50, scal + 0.5); // Tăng scale dần dần từ 0 lên 50
-            overlay.style.opacity = opct;
-            overlay.style.transform = `translate(-50%, -50%) scale(${scal})`;
 
             // Cập nhật animation và khoảng cách
             box.style.animation = `ani-fast ${duration}s linear infinite`;
@@ -61,11 +62,93 @@ document.addEventListener('click', () => {
                 animationFrame = requestAnimationFrame(accelerate);
             } else {
                 cancelAnimationFrame(animationFrame);
-                body.style.backgroundColor = `black`; // Reset nền khi kết thúc
-                isPaused = false; // Cho phép nhấn lại
+                const randomDelay = Math.random() * 2 + 1; 
+                setTimeout(() => {
+                    startOverlayEffect(); // Bắt đầu hiệu ứng overlay
+                }, randomDelay * 1000);
             }
         };
 
         animationFrame = requestAnimationFrame(accelerate);
     }
 });
+
+// Hàm hiệu ứng phóng to overlay
+const startOverlayEffect = () => {
+    overlay.style.display = 'block';
+    let opct = 0; // Đặt lại giá trị opacity
+
+    const updateOverlay = () => {
+        // Tăng opacity và scale với easing
+        opct = Math.min(1, opct + 0.02); // Tăng opacity dần từ 0 đến 1
+
+        // Áp dụng các thay đổi cho overlay
+        overlay.style.opacity = opct;
+
+        // Kiểm tra dừng khi đã đạt scale và opacity mục tiêu
+        if (opct < 1) {
+            // const randomDelay = Math.random() * 500 + 200; // Random delay từ 200ms đến 1s
+            setTimeout(updateOverlay, 90); // Gọi lại hàm với độ trễ
+        }else {
+            box.style.display = 'none';
+            setTimeout(() => {
+                overlay.style.transition = 'transform 0.2s ease-out, opacity 0.2s ease-out';
+                overlay.style.opacity = '1'; 
+                overlay.style.boxShadow = 'none'; 
+
+                setTimeout(() => {
+                    fadeOutOverlay(); // Bắt đầu mờ dần
+                }, 300);
+            }, 100); 
+        }
+    };
+
+    const fadeOutOverlay = () => {
+        let fadeOpacity = 1; 
+
+        const fadeEffect = () => {
+            fadeOpacity -= 0.02;
+            overlay.style.opacity = fadeOpacity;
+            result.style.display = 'flex'; 
+            if (fadeOpacity > 0) {
+                requestAnimationFrame(fadeEffect);
+            } else {
+                overlay.style.display = 'none';
+                setTimeout(() => {
+                    const card = document.querySelector('#result .card'); 
+                    if (card) {
+                        card.classList.add('hover'); 
+                    }
+                    isAnimating = 2;
+                }, 1000);
+            }
+        };
+
+        fadeEffect();
+    };
+    
+    updateOverlay(); 
+};
+
+function resetAnimation(){
+    isPaused = false;
+    isAnimating = 0;
+
+    box.style.animation = 'ani 20s linear infinite'; // Animation ban đầu
+    box.style.transform = ''; // Xóa transform hiện tại
+    box.style.setProperty('--distance', '400px'); // Khoảng cách ban đầu
+
+    // Hiển thị lại các ảnh và overlay
+    overlay.style.display = 'none';
+    overlay.style.opacity = '0';
+    overlay.style.transition = '';
+
+    result.style.display = 'none';
+    box.style.display = 'block';
+
+    const card = document.querySelector('#result .card'); 
+    if (card) {
+        card.classList.remove('hover'); 
+    }
+    
+};
