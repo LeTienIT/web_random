@@ -76,16 +76,14 @@ document.addEventListener('click', () => {
 // Hàm hiệu ứng phóng to overlay
 const startOverlayEffect = () => {
     overlay.style.display = 'block';
-    let opct = 0; // Đặt lại giá trị opacity
+    let opct = 0; 
 
     const updateOverlay = () => {
-        // Tăng opacity và scale với easing
         opct = Math.min(1, opct + 0.02); // Tăng opacity dần từ 0 đến 1
 
-        // Áp dụng các thay đổi cho overlay
         overlay.style.opacity = opct;
 
-        // Kiểm tra dừng khi đã đạt scale và opacity mục tiêu
+        
         if (opct < 1) {
             // const randomDelay = Math.random() * 500 + 200; // Random delay từ 200ms đến 1s
             setTimeout(updateOverlay, 90); // Gọi lại hàm với độ trễ
