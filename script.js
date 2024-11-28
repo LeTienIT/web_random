@@ -9,6 +9,9 @@ const overlay = document.querySelector('.overlay');
 const result = document.getElementById("result");
 const codeRD = document.getElementById("codeRD");
 const nameRD = document.getElementById("nameRD");
+const imgSTART = document.getElementById("img-start");
+
+let flowerInterval;
 
 let randomData = [];  
 
@@ -89,15 +92,14 @@ document.addEventListener('keydown', (event) => {
         {
             resetAnimation();
         }
-        else if(randomData.length > 0){
-            const randomIndex = Math.floor(Math.random() * randomData.length);
-            const randomItem = randomData[randomIndex];
+        else if(randomData.length >= 0){
+            // const randomIndex = Math.floor(Math.random() * randomData.length);
+            // const randomItem = randomData[randomIndex];
 
-            codeRD.innerText = randomItem.code;
-            nameRD.innerText = randomItem.name
+            // codeRD.innerText = randomItem.code;
+            // nameRD.innerText = randomItem.name
             
-            // console.log('Dữ liệu ngẫu nhiên:', randomItem);
-            randomData.splice(randomIndex, 1);
+            // randomData.splice(randomIndex, 1);
 
             isPaused = true;
 
@@ -194,23 +196,24 @@ const startOverlayEffect = () => {
     //Mờ nền => Mở thẻ trúng thưởng
     const fadeOutOverlay = () => {
         let fadeOpacity = 1; 
-
+        result.style.display = 'flex';
+        imgSTART.style.display = 'none';
         const fadeEffect = () => {
             fadeOpacity -= 0.02;
             overlay.style.opacity = fadeOpacity;
-            result.style.display = 'flex'; 
+             
             if (fadeOpacity > 0) {
                 requestAnimationFrame(fadeEffect);
             } else {
                 overlay.style.display = 'none';
-                startFlowerEffect();
+                startFallingFlowers();
                 setTimeout(() => {
                     const card = document.querySelector('#result .card'); 
                     if (card) {
                         card.classList.add('hover'); 
                     }
                     isAnimating = 2;
-                }, 3000);
+                }, 3500);
             }
         };
 
@@ -245,20 +248,28 @@ function createFlower() {
 }
 
 // Hoa rơi CỬA PHẬT
-function startFlowerEffect() {
-    setInterval(createFlower, 300); // Tạo hoa mới mỗi 300ms
+function startFallingFlowers() {
+    if (flowerInterval) return;
+
+    flowerInterval = setInterval(createFlower, 300); 
 }
 
 // Vạn vật về 0
 function removeFallingFlowers() {
-    const flowers = document.querySelectorAll('.flower'); 
-    flowers.forEach(flower => flower.remove()); 
-}
+    if (flowerInterval) {
+        clearInterval(flowerInterval);
+        flowerInterval = null; 
+    }
 
+    const flowers = document.querySelectorAll('.flower');
+    flowers.forEach(flower => flower.remove());
+}
 //reset
 function resetAnimation(){
 
     removeFallingFlowers();
+
+    imgSTART.style.display = 'block';
 
     box.style.animation = 'ani 20s linear infinite'; // Animation ban đầu
     box.style.transform = ''; // Xóa transform hiện tại
