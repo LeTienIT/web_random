@@ -2,121 +2,164 @@
 let isPaused = false; // Kiểm soát dừng/tiếp tục
 let isAnimating = 0; 
 
-const box = document.querySelector('.box'); // Chọn khối xoay
+const box = document.querySelector('.box'); 
 let animationFrame; // Biến lưu requestAnimationFrame
-const body = document.body; // Chọn phần tử body để đổi nền
+const body = document.body; 
 const overlay = document.querySelector('.overlay');
 const result = document.getElementById("result");
 const codeRD = document.getElementById("codeRD");
 const nameRD = document.getElementById("nameRD");
 
-let randomData = [];  // Khai báo mảng để lưu dữ liệu
+let randomData = [];  
 
-function loadData() {
-    fetch('save-data.php', {
-        method: 'GET',
-    })
-    .then(response => response.text())  // Lấy dữ liệu dưới dạng văn bản
-    .then(text => {
-        try {
-            // Thử chuyển đổi nội dung trả về thành JSON
-            const data = JSON.parse(text);
-            if (data.message) {
-                alert(data.message);  // Hiển thị thông báo nếu có lỗi
-            } else {
-                randomData = data; // Lưu dữ liệu vào mảng randomData
-            }
-        } catch (error) {
-            console.error('Dữ liệu trả về không phải là JSON hợp lệ:', error);
-            alert('Lỗi: Dữ liệu trả về không phải là JSON hợp lệ.');
-        }
-    })
-    .catch(error => {
-        console.error('Lỗi:', error);
-        alert('Đã có lỗi xảy ra khi tải dữ liệu.');
+const flowerImages = [
+    'img/9.png', 
+    'img/10.png', 
+    'img/11.png', 
+    'img/12.png' 
+];
+
+let rightClickCount = 0;
+let rightClickTimer;
+
+// Lắng nghe sự kiện chuột phải
+document.addEventListener('contextmenu', (event) => {
+    event.preventDefault(); // Ngăn menu chuột phải
+
+    if (rightClickTimer) clearTimeout(rightClickTimer); 
+
+    rightClickCount++; // 
+
+    if (rightClickCount === 2) {
+        // Hiển thị giao diện nhập dữ liệu
+        document.getElementById('dataSetup').style.display = 'block';
+        rightClickCount = 0; // Reset đếm sau khi hiển thị
+    } else {
+        rightClickTimer = setTimeout(() => {
+            rightClickCount = 0;
+        }, 1000); 
+    }
+});
+
+// Hàm lưu dữ liệu
+function saveData() {
+    const input = document.getElementById('dataInput').value.trim();
+    if (!input) {
+        alert("Vui lòng nhập dữ liệu!");
+        return;
+    }
+
+    // Chia dữ liệu thành các dòng
+    const lines = input.split('\n');
+    const newData = lines.map(line => {
+        const [code, name] = line.split(',');
+        return { code: code?.trim(), name: name?.trim() };
     });
+
+    // Thêm dữ liệu vào randomData
+    randomData = [...randomData, ...newData];
+    alert("Dữ liệu đã được lưu!");
+
+    // Ẩn giao diện nhập dữ liệu
+    document.getElementById('dataSetup').style.display = 'none';
+    // console.log("Dữ liệu hiện tại:", randomData);
 }
-window.onload = function() {
-    loadData();
-};
-document.addEventListener('click', () => {
-    if (isAnimating == 1)
-    {
-        result;
-    } 
-    else if(isAnimating == 2)
-    {
-        resetAnimation();
+
+// Hàm xóa toàn bộ dữ liệu
+function resetData() {
+    if (confirm("Bạn có chắc chắn muốn xóa toàn bộ dữ liệu không?")) {
+        randomData = [];
+        document.getElementById('dataInput').value = '';
+        alert("Dữ liệu đã được xóa!");
     }
-    else if(randomData.length > 0){
-        const randomIndex = Math.floor(Math.random() * randomData.length);
-        const randomItem = randomData[randomIndex];
+}
 
-        codeRD.innerText = randomItem.code;
-        nameRD.innerText = randomItem.name
-        
-        console.log('Dữ liệu ngẫu nhiên:', randomItem);
-        randomData.splice(randomIndex, 1);
+function closeBox() {
+    document.getElementById('dataSetup').style.display = 'none';
+}
 
-        isPaused = true;
+// 
+document.addEventListener('keydown', (event) => {
+    if (event.code === 'F2') {
+            if (isAnimating == 1)
+        {
+            result;
+        } 
+        else if(isAnimating == 2)
+        {
+            resetAnimation();
+        }
+        else if(randomData.length > 0){
+            const randomIndex = Math.floor(Math.random() * randomData.length);
+            const randomItem = randomData[randomIndex];
 
-        isPaused = true;
-        isAnimating = 1; 
+            codeRD.innerText = randomItem.code;
+            nameRD.innerText = randomItem.name
+            
+            // console.log('Dữ liệu ngẫu nhiên:', randomItem);
+            randomData.splice(randomIndex, 1);
 
-        body.style.background = 'linear-gradient(135deg, #b36a6e 0%, #a07d8a 30%, #946a9e 60%, #4b6b75 100%)';
+            isPaused = true;
 
-        // Lấy trạng thái xoay hiện tại
-        const computedStyle = getComputedStyle(box);
-        const currentTransform = computedStyle.transform;
+            isPaused = true;
+            isAnimating = 1; 
 
-        // Dừng animation và giữ nguyên trạng thái
-        box.style.animation = 'none';
-        box.style.transform = currentTransform;
+            body.style.background = 'linear-gradient(135deg, #8c4e52 0%, #7c5e69 30%, #724e83 60%, #354b52 100%)';
 
-        let duration = 20; // Thời gian chu kỳ ban đầu (20s)
-        let distance = 400; // Khoảng cách ban đầu giữa các ảnh (translateZ)
+            // Lấy trạng thái xoay hiện tại
+            const computedStyle = getComputedStyle(box);
+            const currentTransform = computedStyle.transform;
 
-        const targetDuration = 0.2; // Thời gian chu kỳ mục tiêu (0.2s)
-        const targetDistance = 0; // Khoảng cách mục tiêu (tập trung hoàn toàn ở giữa)
+            // Dừng animation và giữ nguyên trạng thái
+            box.style.animation = 'none';
+            box.style.transform = currentTransform;
 
-        const startTime = performance.now(); // Lấy thời gian bắt đầu
+            let duration = 20; // Thời gian chu kỳ ban đầu (20s)
+            let distance = 400; // Khoảng cách ban đầu giữa các ảnh (translateZ)
 
-        const accelerate = (currentTime) => {
+            const targetDuration = 0.2; // Thời gian chu kỳ mục tiêu (0.2s)
+            const targetDistance = 0; // Khoảng cách mục tiêu (tập trung hoàn toàn ở giữa)
 
-            const elapsedTime = (currentTime - startTime) / 1000; // Thời gian đã trôi qua (giây)
+            const startTime = performance.now(); // Lấy thời gian bắt đầu
 
-            // Nội suy (linear interpolation) giữa thời gian và khoảng cách
-            duration = Math.max(targetDuration, 20 - (elapsedTime * 10)); // Giảm dần về 0.2s
-            distance = Math.max(targetDistance, 400 - (elapsedTime * 400)); // Giảm dần về 0
+            const accelerate = (currentTime) => {
 
-            // Cập nhật animation và khoảng cách
-            box.style.animation = `ani-fast ${duration}s linear infinite`;
-            box.style.setProperty('--distance', `${distance}px`);
+                const elapsedTime = (currentTime - startTime) / 1000; // Thời gian đã trôi qua (giây)
 
-            // Hiệu ứng nhấp nháy nền
-            if (Math.floor(elapsedTime * 10) % 2 === 0) {
-                body.style.backgroundColor = `rgba(${Math.random() * 255}, 0, 0, 0.8)`; // Đỏ ngẫu nhiên
-            } else {
-                body.style.backgroundColor = `rgba(0, 0, 0, 1)`; // Trở về đen
-            }
+                // Nội suy (linear interpolation) giữa thời gian và khoảng cách
+                duration = Math.max(targetDuration, 20 - (elapsedTime * 10)); // Giảm dần về 0.2s
+                distance = Math.max(targetDistance, 400 - (elapsedTime * 400)); // Giảm dần về 0
 
-            // Tiếp tục hoặc dừng lại nếu đạt mục tiêu
-            if (duration > targetDuration || distance > targetDistance) {
-                animationFrame = requestAnimationFrame(accelerate);
-            } else {
-                cancelAnimationFrame(animationFrame);
-                const randomDelay = Math.random() * 2 + 1; 
-                setTimeout(() => {
-                    startOverlayEffect(); // Bắt đầu hiệu ứng overlay
-                }, randomDelay * 1000);
-            }
-        };
+                // Cập nhật animation và khoảng cách
+                box.style.animation = `ani-fast ${duration}s linear infinite`;
+                box.style.setProperty('--distance', `${distance}px`);
 
-        animationFrame = requestAnimationFrame(accelerate);
+                // Hiệu ứng nhấp nháy nền
+                if (Math.floor(elapsedTime * 10) % 2 === 0) {
+                    body.style.backgroundColor = `rgba(${Math.random() * 255}, 0, 0, 0.8)`; // Đỏ ngẫu nhiên
+                } else {
+                    body.style.backgroundColor = `rgba(0, 0, 0, 1)`; // Trở về đen
+                }
+
+                // Tiếp tục hoặc dừng lại nếu đạt mục tiêu
+                if (duration > targetDuration || distance > targetDistance) {
+                    animationFrame = requestAnimationFrame(accelerate);
+                } else {
+                    cancelAnimationFrame(animationFrame);
+                    const randomDelay = Math.random() * 2 + 1; 
+                    setTimeout(() => {
+                        startOverlayEffect(); // Bắt đầu hiệu ứng overlay
+                    }, randomDelay * 1000);
+                }
+            };
+
+            animationFrame = requestAnimationFrame(accelerate);
+        }
+        else{
+            alert("Dữ liệu chưa được thiết lập");
+        }
     }
-    else{
-        alert("Dữ liệu chưa được thiết lập");
-    }
+    
 });
 
 // Hàm hiệu ứng phóng to overlay
@@ -129,7 +172,7 @@ const startOverlayEffect = () => {
 
         overlay.style.opacity = opct;
 
-        
+        //đệ quy
         if (opct < 1) {
             // const randomDelay = Math.random() * 500 + 200; // Random delay từ 200ms đến 1s
             setTimeout(updateOverlay, 90); // Gọi lại hàm với độ trễ
@@ -142,12 +185,13 @@ const startOverlayEffect = () => {
                 overlay.style.boxShadow = 'none'; 
 
                 setTimeout(() => {
-                    fadeOutOverlay(); // Bắt đầu mờ dần
+                    fadeOutOverlay(); 
                 }, 300);
             }, 100); 
         }
     };
 
+    //Mờ nền => Mở thẻ trúng thưởng
     const fadeOutOverlay = () => {
         let fadeOpacity = 1; 
 
@@ -159,6 +203,7 @@ const startOverlayEffect = () => {
                 requestAnimationFrame(fadeEffect);
             } else {
                 overlay.style.display = 'none';
+                startFlowerEffect();
                 setTimeout(() => {
                     const card = document.querySelector('#result .card'); 
                     if (card) {
@@ -175,9 +220,45 @@ const startOverlayEffect = () => {
     updateOverlay(); 
 };
 
+function createFlower() {
+    const flowerContainer = document.getElementById('flower-container');
+
+    // Tạo phần tử hoa
+    const flower = document.createElement('div');
+    flower.classList.add('flower');
+
+    // Chọn ảnh hoa ngẫu nhiên
+    const randomImage = flowerImages[Math.floor(Math.random() * flowerImages.length)];
+    flower.style.backgroundImage = `url(${randomImage})`;
+
+    // Thiết lập vị trí, kích thước và thời gian rơi ngẫu nhiên
+    flower.style.left = Math.random() * 100 + 'vw'; // Ngẫu nhiên vị trí ngang
+    flower.style.animationDuration = Math.random() * 5 + 5 + 's'; // Thời gian rơi ngẫu nhiên
+    flower.style.width = flower.style.height = Math.random() * 10 + 15 + 'px'; // Kích thước ngẫu nhiên
+
+    flowerContainer.appendChild(flower);
+
+    // Xóa phần tử hoa sau khi hoàn thành hoạt ảnh
+    flower.addEventListener('animationend', () => {
+        flower.remove();
+    });
+}
+
+// Hoa rơi CỬA PHẬT
+function startFlowerEffect() {
+    setInterval(createFlower, 300); // Tạo hoa mới mỗi 300ms
+}
+
+// Vạn vật về 0
+function removeFallingFlowers() {
+    const flowers = document.querySelectorAll('.flower'); 
+    flowers.forEach(flower => flower.remove()); 
+}
+
+//reset
 function resetAnimation(){
-    isPaused = false;
-    isAnimating = 0;
+
+    removeFallingFlowers();
 
     box.style.animation = 'ani 20s linear infinite'; // Animation ban đầu
     box.style.transform = ''; // Xóa transform hiện tại
@@ -195,6 +276,9 @@ function resetAnimation(){
     if (card) {
         card.classList.remove('hover'); 
     }
+
+    isPaused = false;
+    isAnimating = 0;
     
 };
 

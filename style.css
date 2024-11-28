@@ -32,6 +32,49 @@ body {
     z-index: 100; /* Hiển thị trên cùng */
     transition: transform 0.2s ease-out, opacity 0.2s ease-out;
 }
+
+
+.container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    background: #ffffff;
+    border: 2px solid #ccc;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+textarea {
+    width: 100%;
+    height: 200px;
+    margin-bottom: 20px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: none;
+}
+
+.buttons {
+    text-align: center;
+}
+
+button {
+    margin: 0 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/*  */
 .box {
     /* display: none; */
     position: relative;
@@ -81,6 +124,44 @@ body {
     }
 }
 
+/*  */
+
+#flower-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.flower {
+    position: absolute;
+    background-size: contain; /* Đảm bảo ảnh hoa vừa khít */
+    background-repeat: no-repeat; /* Không lặp lại ảnh */
+    background-color: transparent; /* Đảm bảo nền trong suốt */
+    opacity: 0.8; /* Hiệu ứng mờ để nhìn dịu mắt */
+    animation: fall linear infinite;
+}
+
+/* Hiệu ứng rơi */
+@keyframes fall {
+    0% {
+        transform: translateY(-100%) rotate(0deg);
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/*  */
 #result{
     display: none;
     position: absolute;

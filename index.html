@@ -8,6 +8,16 @@
     <title>Document</title>
   </head>
   <body>
+    <div class="container" id="dataSetup" style="display: none;">
+        <h1>Khởi Tạo Dữ Liệu</h1>
+        <p>Nhập dữ liệu: mỗi dòng gồm <b>CODE</b> và <b>TÊN</b>, cách nhau bởi dấu phẩy (,)</p>
+        <textarea id="dataInput" placeholder="VD: Mã code,Lê Đắc Tiến"></textarea>
+        <div class="buttons">
+            <button class="save" onclick="saveData()">Lưu Dữ Liệu</button>
+            <button class="reset" onclick="resetData()">Xóa Dữ Liệu</button>
+            <button class="reset" onclick="closeBox()">Hủy</button>
+        </div>
+    </div>
     <div class="box">
         <span style="--i: 1">
             <img src="img/1.jpg" alt="">
@@ -37,6 +47,8 @@
         </span>
     </div>
     <div class="overlay"></div>
+
+    <div id="flower-container"></div>
     <div id="result">
         <div class="card-container">
             <div class="card">
