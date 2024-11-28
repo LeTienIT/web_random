@@ -59,7 +59,6 @@ function saveData() {
         return { code: code?.trim(), name: name?.trim() };
     });
 
-    // Thêm dữ liệu vào randomData
     randomData = [...randomData, ...newData];
     alert("Dữ liệu đã được lưu!");
 
@@ -92,14 +91,14 @@ document.addEventListener('keydown', (event) => {
         {
             resetAnimation();
         }
-        else if(randomData.length >= 0){
-            // const randomIndex = Math.floor(Math.random() * randomData.length);
-            // const randomItem = randomData[randomIndex];
+        else if(randomData.length > 0){
+            const randomIndex = Math.floor(Math.random() * randomData.length);
+            const randomItem = randomData[randomIndex];
 
-            // codeRD.innerText = randomItem.code;
-            // nameRD.innerText = randomItem.name
+            codeRD.innerText = randomItem.code;
+            nameRD.innerText = randomItem.name
             
-            // randomData.splice(randomIndex, 1);
+            randomData.splice(randomIndex, 1);
 
             isPaused = true;
 
